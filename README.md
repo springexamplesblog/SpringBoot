@@ -1,3 +1,3 @@
 # Spring Boot Examples
 
-- [Bootstrapping a Spring Boot Web Application](https://springexamples.com/bootstrapping-web-application/)
+- [All Spring Boot Examples](https://springexamples.com/spring-boot/) Posted on the Blog
