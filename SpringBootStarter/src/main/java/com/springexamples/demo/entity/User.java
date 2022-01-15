@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 import org.springframework.hateoas.server.core.Relation;
 
@@ -23,13 +24,17 @@ import lombok.NoArgsConstructor;
 @Relation(collectionRelation = "users", itemRelation = "user")
 public class User {
   private @Id @GeneratedValue Long id;
-  @NotBlank(message = "First name is mandatory")
+  
+  @NotBlank(message = "{first.name.missing}")
   @Column(name = "first_name")
   private String firstName;
-  @NotBlank(message = "Last name is mandatory")
+  
+  @NotBlank(message = "{lats.name.missing}")
   @Column(name = "last_name")
-  @NotBlank(message = "Email is mandatory")
   private String lastName;
+  
+  @NotBlank(message = "{email.missing}")
+  @Pattern(regexp=".+@.+\\.[a-z]+", message = "{email.format.error}")
   private String email;
 
   @Override

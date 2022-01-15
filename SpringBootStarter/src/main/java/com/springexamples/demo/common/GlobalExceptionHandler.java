@@ -1,10 +1,12 @@
 package com.springexamples.demo.common;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.FieldError;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,23 +15,25 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+  private static final String REQUEST_VALIDATION_ERRORS = "Request validation errors";
+
   @ResponseBody
   @ExceptionHandler(RecordNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
   String recordNotFoundHandler(RecordNotFoundException ex) {
     return ex.getMessage();
   }
-  
+
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public Map<String, String> handleValidationExceptions(
+  public ResponseEntity<ErrorResponse> handleValidationExceptions(
     MethodArgumentNotValidException ex) {
-      Map<String, String> errors = new HashMap<>();
-      ex.getBindingResult().getAllErrors().forEach((error) -> {
-          String fieldName = ((FieldError) error).getField();
-          String errorMessage = error.getDefaultMessage();
-          errors.put(fieldName, errorMessage);
-      });
-      return errors;
+    List<String> details = new ArrayList<String>();
+    for (ObjectError error : ex.getBindingResult()
+      .getAllErrors()) {
+      details.add(error.getDefaultMessage());
+    }
+    ErrorResponse error = new ErrorResponse(REQUEST_VALIDATION_ERRORS, details);
+    return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
   }
 }
